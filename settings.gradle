@@ -1,0 +1,2 @@
+rootProject.name='EyesApp'
+include ':app'
