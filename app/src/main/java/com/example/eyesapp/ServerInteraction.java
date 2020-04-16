@@ -30,7 +30,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-public class MainActivity extends AppCompatActivity {
+public class ServerInteraction extends AppCompatActivity {
     String selectedImagePath;
 
     @Override
