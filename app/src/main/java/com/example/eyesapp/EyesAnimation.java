@@ -3,19 +3,48 @@ package com.example.eyesapp;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.util.Log;
 import android.view.View;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class EyesAnimation extends View {
 
     Paint p = new Paint();
-    private final float CIRCLE_ANIMATION = 0.5f;
+    private float CIRCLE_ANIMATION;
     private long mStartTime;
     private float mEyeFirstAngle;
+    private Timer myTimer;
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         mStartTime = getTime();
     }
+    boolean flag;
+    private void refreshAnim() {
+        flag=true;
+        if(flag==true) {
+            myTimer = new Timer();
+            myTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    invalidate();
+                }
+
+            }, 1000);
+            flag=false;
+            timer.cancel();
+        }
+        else {
+
+            return;
+        }
+    }
+
+    Timer timer = new Timer();
+
+
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -25,14 +54,16 @@ public class EyesAnimation extends View {
         p.setStrokeWidth(5);
         rotateFirstEye(canvas);
         rotateSecondEye(canvas);
-        invalidate();
         canvas.drawCircle(x * 0.25f, y / 2, 220, p);
         canvas.drawCircle(x * 0.75f, y / 2, 220, p);
-
     }
 
-    public EyesAnimation(Context context) {
+    public EyesAnimation(Context context, String angle) {
         super(context);
+        Log.d("myTag", angle + "");
+        CIRCLE_ANIMATION = (float) (Integer.parseInt(angle) * Math.PI / 180);
+        Log.d("tag",CIRCLE_ANIMATION+"");
+        refreshAnim();
     }
 
     private long getTime() { //возвращает текущее время в миллисекундах

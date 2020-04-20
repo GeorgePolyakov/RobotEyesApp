@@ -2,7 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    tools:context=".ServerInteraction">
 
     <EditText
         android:layout_width="match_parent"
@@ -30,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:id="@+id/IPAddress"
-            android:text="Enter Server Ip" />
+            android:text="10.0.2.2" />
     </LinearLayout>
 
     <LinearLayout
@@ -51,6 +53,7 @@
     </LinearLayout>
 
     <Button
+        android:id="@+id/connectServer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Connect to Server"

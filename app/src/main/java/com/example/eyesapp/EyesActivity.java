@@ -9,6 +9,8 @@ public class EyesActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(new EyesAnimation(this));
+        Bundle arguments = getIntent().getExtras();
+        String name = arguments.get("angle").toString();
+        setContentView(new EyesAnimation(this,name));
     }
 }

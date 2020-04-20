@@ -1,107 +1,166 @@
 package com.example.eyesapp;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
+import android.app.Activity;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.hardware.Camera;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
+
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.SurfaceHolder;
+import android.view.SurfaceView;
 import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
-
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
+import java.io.OutputStream;
+import java.util.Timer;
 
-public class PhotoActivity extends AppCompatActivity {
+import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 
-    ImageView imageView;
-    Button button;
-    static final int CAPTURE_IMAGE_REQUEST = 1;
-    Uri image_uri;
+public class PhotoActivity extends Activity {
+
+    SurfaceView sv;
+    ImageView iv_image;
+    SurfaceHolder sHolder;
+    Camera mCamera;
+    private HolderCallback holderCallback;
+
+    private int findFrontFacingCameraID() {
+        int cameraId = -1;
+        // Search for the front facing camera
+        int numberOfCameras = Camera.getNumberOfCameras();
+        for (int i = 0; i < numberOfCameras; i++) {
+            Camera.CameraInfo info = new Camera.CameraInfo();
+            Camera.getCameraInfo(i, info);
+            if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+                cameraId = i;
+                break;
+            }
+        }
+        return cameraId;
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public void onCreate(Bundle icicle) {
+        super.onCreate(icicle);
         setContentView(R.layout.activity_photo);
 
-        imageView = findViewById(R.id.image_view);
-        button = findViewById(R.id.btnCapture);
+        int index = findFrontFacingCameraID();
+        if (index == -1){
+            Toast.makeText(getApplicationContext(), "No front camera", Toast.LENGTH_LONG).show();
+        }
+        else
+        {
+            iv_image = (ImageView) findViewById(R.id.image_view);
+            sv = (SurfaceView) findViewById(R.id.surfaceView);
+            sHolder = sv.getHolder();
+            holderCallback = new HolderCallback();
+            sHolder.addCallback(holderCallback);
+            sHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+        }
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    myCaptureMethode();
-                }
-            }
-        });
+    }
+    public void goToInteraction(View view) {
+        Intent intent1 = new Intent(PhotoActivity.this, ServerInteraction.class);
+        startActivity(intent1);
     }
 
-    private void myCaptureMethode() {
 
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
-        } else {
-            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+    class HolderCallback implements SurfaceHolder.Callback {
 
-                try {
-                    ContentValues values = new ContentValues();
-                    values.put(MediaStore.Images.Media.TITLE, "New Picture");
-                    values.put(MediaStore.Images.Media.DESCRIPTION, "From the Camera");
-                    image_uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, image_uri);
-                    startActivityForResult(takePictureIntent, CAPTURE_IMAGE_REQUEST);
+        @Override
+        public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
+            Camera.Parameters parameters = mCamera.getParameters();
+            mCamera.setParameters(parameters);
+            mCamera.startPreview();
 
-                } catch (Exception ex) {
-                    // Error occurred while creating the File
-                    displayMessage(getBaseContext(), ex.getMessage().toString());
+            Camera.PictureCallback mCall = new Camera.PictureCallback() {
+                @Override
+                public void onPictureTaken(byte[] data, Camera camera) {
+                    Uri uriTarget = getContentResolver().insert//(Media.EXTERNAL_CONTENT_URI, image);
+                            (MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new ContentValues());
+
+                    OutputStream imageFileOS;
+                    try {
+                        imageFileOS = getContentResolver().openOutputStream(uriTarget);
+                        imageFileOS.write(data);
+                        imageFileOS.flush();
+                        imageFileOS.close();
+                       // ServerInteraction serverInteraction = new ServerInteraction();
+
+
+                        /*Toast.makeText(PhotoActivity.this,
+                                "Image saved: " + data, Toast.LENGTH_LONG).show();*/
+                        Log.d("xyi","aaaaaaaaa " + data.length);
+                      //  Log.d("xyi","aaaaaaaaa " +   serverInteraction.connectServer(data));
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    //mCamera.startPreview();
+                    Bitmap bmp;
+
+
+                    bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
+
+                    iv_image.setImageBitmap(bmp);
+
                 }
+            };
 
+            mCamera.takePicture(null, null, mCall);
+        }
 
+        int getFrontCameraId() {
+            Camera.CameraInfo ci = new Camera.CameraInfo();
+            for (int i = 0; i < Camera.getNumberOfCameras(); i++) {
+                Camera.getCameraInfo(i, ci);
+                if (ci.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) return i;
+            }
+            return -1; // No front-facing camera found
+        }
+
+        @Override
+        public void surfaceCreated(SurfaceHolder holder) {
+            int index = getFrontCameraId();
+            if (index == -1) {
+                Toast.makeText(getApplicationContext(), "No front camera", Toast.LENGTH_LONG).show();
             } else {
-                displayMessage(getBaseContext(), "Nullll");
+                mCamera = Camera.open(index);
+                Toast.makeText(getApplicationContext(), "With front camera", Toast.LENGTH_LONG).show();
             }
-        }
+            mCamera = Camera.open(index);
+            try {
+                mCamera.setPreviewDisplay(holder);
 
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            imageView.setImageURI(image_uri);
-        }
-    }
-
-
-    private void displayMessage(Context context, String message) {
-        Toast.makeText(context, message, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        if (requestCode == 0) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED
-                    && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
-                myCaptureMethode();
+            } catch (IOException exception) {
+                mCamera.release();
+                mCamera = null;
             }
+
         }
 
+        @Override
+        public void surfaceDestroyed(SurfaceHolder holder) {
+            mCamera.stopPreview();
+            mCamera.release();
+            mCamera = null;
+        }
+
+
     }
+
 }
