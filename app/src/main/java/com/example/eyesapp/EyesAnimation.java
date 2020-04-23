@@ -44,8 +44,6 @@ public class EyesAnimation extends View {
 
     Timer timer = new Timer();
 
-
-
     @Override
     protected void onDraw(Canvas canvas) {
         int x = getWidth();

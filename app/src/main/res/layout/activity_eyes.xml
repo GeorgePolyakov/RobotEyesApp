@@ -1,9 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:screenOrientation="landscape"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".EyesActivity">
+    android:background="#FFFFFF"
+    >
+    <ImageView
+        android:id="@+id/eyes1"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center|start"
+        android:layout_marginLeft="130dp"
+        android:background="@android:color/transparent"
+        android:contentDescription="TODO"
+        android:src="@drawable/ic_11" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <ImageView
+        android:id="@+id/eyes2"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center|end"
+        android:layout_marginRight="130dp"
+        android:layout_marginBottom="@dimen/cardview_compat_inset_shadow"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_1" />
+
+    <ImageView
+        android:id="@+id/eyebrows1"
+        android:layout_width="160dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_eyebrows1"
+        android:layout_gravity="center|end"
+        android:layout_marginRight="130dp"
+        android:layout_marginBottom="@dimen/cardview_compat_inset_shadow"
+        android:layout_marginTop="-80dp"
+        />
+    <ImageView
+        android:id="@+id/eyebrows2"
+        android:layout_width="160dp"
+        android:layout_height="50dp"
+        android:src="@drawable/ic_eyebrows11"
+        android:layout_gravity="center|start"
+        android:layout_marginLeft="120dp"
+        android:layout_marginBottom="@dimen/cardview_compat_inset_shadow"
+        android:contentDescription="TODO"
+        android:layout_marginTop="-80dp"
+        />
+</FrameLayout>
