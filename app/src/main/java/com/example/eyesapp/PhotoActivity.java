@@ -39,7 +39,6 @@ public class PhotoActivity extends Activity {
 
     private int findFrontFacingCameraID() {
         int cameraId = -1;
-        // Search for the front facing camera
         int numberOfCameras = Camera.getNumberOfCameras();
         for (int i = 0; i < numberOfCameras; i++) {
             Camera.CameraInfo info = new Camera.CameraInfo();

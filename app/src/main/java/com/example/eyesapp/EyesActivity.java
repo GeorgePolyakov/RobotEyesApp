@@ -14,9 +14,9 @@ public class EyesActivity extends AppCompatActivity {
 
     private ImageView eyes1;
     private ImageView eyes2;
-    float angle = 0f;
-    float x1, y1, x2, y2;
-    AnimatorSet animatorSet;
+    private float angle = 0f;
+    private float x1, y1, x2, y2;
+    private AnimatorSet animatorSet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +37,6 @@ public class EyesActivity extends AppCompatActivity {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
             public void onClick(View v) {
-
 
                 float sumX = (angle == 0) ? 0 : (angle == 45) ? 50 : (angle == 90) ? 50 : (angle == 135) ? 50 : (angle == 180) ? 0 : (angle == 225) ? -50 : (angle == 270) ? -50 : 0;
                 float sumY = (angle == 0) ? 50 : (angle == 45) ? 50 : (angle == 90) ? 0 : (angle == 135) ? -50 : (angle == 180) ? -50 : (angle == 225) ? -50 : (angle == 270) ? 0 : 0;
