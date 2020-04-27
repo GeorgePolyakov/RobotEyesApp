@@ -12,10 +12,10 @@ import java.util.TimerTask;
 public class EyesAnimation extends View {
 
     Paint p = new Paint();
-    private float CIRCLE_ANIMATION;
-    private long mStartTime;
-    private float mEyeFirstAngle;
-    private Timer myTimer;
+    float CIRCLE_ANIMATION;
+    long mStartTime;
+    float mEyeFirstAngle;
+    Timer myTimer;
 
     @Override
     protected void onSizeChanged(int w, int h, int oldw, int oldh) {

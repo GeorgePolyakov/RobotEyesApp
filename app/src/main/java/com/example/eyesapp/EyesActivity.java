@@ -7,6 +7,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -14,9 +15,9 @@ public class EyesActivity extends AppCompatActivity {
 
     private ImageView eyes1;
     private ImageView eyes2;
-    private float angle = 0f;
-    private float x1, y1, x2, y2;
-    private AnimatorSet animatorSet;
+    float angle = 0f;
+    float x1, y1, x2, y2;
+    AnimatorSet animatorSet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +26,7 @@ public class EyesActivity extends AppCompatActivity {
 
         Bundle arguments = getIntent().getExtras();
         angle = Float.parseFloat(arguments.get("angle").toString());
+        Log.d("xyi",angle + "aaaaaaaaaaaaaaaaa");
 
         eyes1 = findViewById(R.id.eyes1);
         eyes2 = findViewById(R.id.eyes2);
