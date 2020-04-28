@@ -12,6 +12,7 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -32,6 +33,8 @@ import okhttp3.Response;
 import android.widget.Button;
 import androidx.annotation.RequiresApi;
 
+import static java.util.Base64.getEncoder;
+
 public class ServerInteraction extends AppCompatActivity {
     String selectedImagePath;
     String eyesangle="";
@@ -49,6 +52,7 @@ public class ServerInteraction extends AppCompatActivity {
         startActivity(intent);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public void connectServer(View v) {
         EditText ipv4AddressView = findViewById(R.id.IPAddress);
         String ipv4Address = ipv4AddressView.getText().toString();
@@ -64,11 +68,16 @@ public class ServerInteraction extends AppCompatActivity {
         Bitmap bitmap = BitmapFactory.decodeFile(selectedImagePath, options);
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
         byte[] byteArray = stream.toByteArray();
+        String encodedDoc= getEncoder().encodeToString(byteArray);
+        Log.d("Tag",byteArray.toString());
 
         RequestBody postBodyImage = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
-                .addFormDataPart("image", "androidFlask.jpg", RequestBody.create(MediaType.parse("image/*jpg"), byteArray))
+                .addFormDataPart("file",encodedDoc)
+               // .addFormDataPart("image", "androidFlask.jpg", RequestBody.create(MediaType.parse("image/*jpg"), encodedDoc))
                 .build();
+
+
 
         TextView responseText = findViewById(R.id.responseText);
         responseText.setText("Please wait ...");
