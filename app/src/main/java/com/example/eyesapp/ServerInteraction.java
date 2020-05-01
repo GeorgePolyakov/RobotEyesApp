@@ -24,6 +24,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -71,13 +72,9 @@ public class ServerInteraction extends AppCompatActivity {
         String encodedDoc= getEncoder().encodeToString(byteArray);
         Log.d("Tag",byteArray.toString());
 
-        RequestBody postBodyImage = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("file",encodedDoc)
-               // .addFormDataPart("image", "androidFlask.jpg", RequestBody.create(MediaType.parse("image/*jpg"), encodedDoc))
+        RequestBody postBodyImage = new FormBody.Builder()
+                .add("file", encodedDoc)
                 .build();
-
-
 
         TextView responseText = findViewById(R.id.responseText);
         responseText.setText("Please wait ...");
