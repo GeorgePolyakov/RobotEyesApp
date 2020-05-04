@@ -71,14 +71,15 @@ public class ServerInteraction extends AppCompatActivity {
         byte[] byteArray = stream.toByteArray();
         String encodedDoc= getEncoder().encodeToString(byteArray);
         Log.d("Tag",byteArray.toString());
+        String urlParameters = postUrl + "?message=" + encodedDoc;
 
         RequestBody postBodyImage = new FormBody.Builder()
-                .add("file", encodedDoc)
+                .add("String", encodedDoc)
                 .build();
 
         TextView responseText = findViewById(R.id.responseText);
         responseText.setText("Please wait ...");
-        postRequest(postUrl, postBodyImage);
+        postRequest(urlParameters, postBodyImage);
     }
     void postRequest(String postUrl, RequestBody postBody) {
 
@@ -86,7 +87,6 @@ public class ServerInteraction extends AppCompatActivity {
 
         Request request = new Request.Builder()
                 .url(postUrl)
-                .post(postBody)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
