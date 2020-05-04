@@ -22,6 +22,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.HashMap;
+
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.FormBody;
@@ -71,15 +73,36 @@ public class ServerInteraction extends AppCompatActivity {
         byte[] byteArray = stream.toByteArray();
         String encodedDoc= getEncoder().encodeToString(byteArray);
         Log.d("Tag",byteArray.toString());
-        String urlParameters = postUrl + "?message=" + encodedDoc;
 
-        RequestBody postBodyImage = new FormBody.Builder()
-                .add("String", encodedDoc)
+       /* RequestBody postBodyImage = new FormBody.Builder()
+                .add("file", encodedDoc)
                 .build();
 
         TextView responseText = findViewById(R.id.responseText);
         responseText.setText("Please wait ...");
-        postRequest(urlParameters, postBodyImage);
+        postRequest(postUrl, postBodyImage);*/
+
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("message",encodedDoc);
+        //params.put("password","12345");
+
+        //server url
+
+
+        // static class "HttpUtility" with static method "newRequest(url,method,callback)"
+        HttpUtility.newRequest(postUrl,HttpUtility.METHOD_POST,params, new HttpUtility.Callback() {
+            @Override
+            public void OnSuccess(String response) {
+                // on success
+                Log.d("ServerOnSuccess", response);
+            }
+            @Override
+            public void OnError(int status_code, String message) {
+                // on error
+                Log.d("ServerOnSuccess",status_code+" message="+message);
+
+            }
+        });
     }
     void postRequest(String postUrl, RequestBody postBody) {
 
@@ -87,6 +110,7 @@ public class ServerInteraction extends AppCompatActivity {
 
         Request request = new Request.Builder()
                 .url(postUrl)
+                .post(postBody)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
