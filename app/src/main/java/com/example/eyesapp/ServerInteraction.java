@@ -62,7 +62,7 @@ public class ServerInteraction extends AppCompatActivity {
         EditText portNumberView = findViewById(R.id.portNumber);
         String portNumber = portNumberView.getText().toString();
 
-        String postUrl = "http://" + "10.0.2.2" + ":" + "5000" + "/";
+        String postUrl = "http://" + "192.168.43.244" + ":" + "1000" + "/";
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -95,6 +95,7 @@ public class ServerInteraction extends AppCompatActivity {
             public void OnSuccess(String response) {
                 // on success
                 Log.d("ServerOnSuccess", response);
+                goToEyes(response);
             }
             @Override
             public void OnError(int status_code, String message) {

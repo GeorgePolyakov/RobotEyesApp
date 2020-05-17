@@ -40,7 +40,7 @@ public class HttpUtility {
 
                     HttpURLConnection urlConnection = (HttpURLConnection) new URL(url).openConnection();
                     urlConnection.setUseCaches(false);
-                    urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded"); // handle url encoded form data
+                    urlConnection.setRequestProperty("Content-Type", "text/html"); // handle url encoded form data
                     urlConnection.setRequestProperty("charset", "utf-8");
                     if (method == METHOD_GET) {
                         urlConnection.setRequestMethod("GET");
