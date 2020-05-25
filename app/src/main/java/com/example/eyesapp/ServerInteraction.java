@@ -62,7 +62,7 @@ public class ServerInteraction extends AppCompatActivity {
         EditText portNumberView = findViewById(R.id.portNumber);
         String portNumber = portNumberView.getText().toString();
 
-        String postUrl = "http://" + "10.0.2.2" + ":" + "1000" + "/";
+        String postUrl = "http://" + "10.0.2.2" + ":" + "5000" + "/";
 
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -70,11 +70,9 @@ public class ServerInteraction extends AppCompatActivity {
         // Read BitMap by file path
         Bitmap bitmap = BitmapFactory.decodeFile(selectedImagePath, options);
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-        Intent intent = getIntent();
-
         byte[] byteArray = stream.toByteArray();
-        String encodedDoc= intent.getStringExtra("photoString");//getEncoder().encodeToString(byteArray);
-        Log.d("ReceivedString",encodedDoc.length() + "");
+        String encodedDoc= getEncoder().encodeToString(byteArray);
+        Log.d("Tag",byteArray.toString());
 
        /* RequestBody postBodyImage = new FormBody.Builder()
                 .add("file", encodedDoc)
@@ -96,7 +94,6 @@ public class ServerInteraction extends AppCompatActivity {
             @Override
             public void OnSuccess(String response) {
                 // on success
-                goToEyes(response);
                 Log.d("ServerOnSuccess", response);
             }
             @Override
