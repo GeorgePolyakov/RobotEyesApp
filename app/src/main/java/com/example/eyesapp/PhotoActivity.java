@@ -27,14 +27,18 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashMap;
 import java.util.Timer;
 
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
+import static java.util.Base64.getEncoder;
 
 public class PhotoActivity extends Activity {
 
@@ -44,6 +48,9 @@ public class PhotoActivity extends Activity {
     Camera mCamera;
     private HolderCallback holderCallback;
     Camera.PictureCallback mCall;
+    Intent intent;
+    String photoString="";
+    byte [] bytePhoto;
 
     private int findFrontFacingCameraID() {
         int cameraId = -1;
@@ -68,19 +75,21 @@ public class PhotoActivity extends Activity {
         if (index == -1) {
             Toast.makeText(getApplicationContext(), "No front camera", Toast.LENGTH_LONG).show();
         } else {
-            // iv_image = (ImageView) findViewById(R.id.image_view);
+            //iv_image = (ImageView) findViewById(R.id.image_view);
             sv = (SurfaceView) findViewById(R.id.surfaceView);
             sHolder = sv.getHolder();
             holderCallback = new HolderCallback();
             sHolder.addCallback(holderCallback);
             sHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+            String path1 = getExternalFilesDir(null).getPath().toString();
+            // Log.d("Tag",path1);
+            intent = new Intent(this, ServerInteraction.class);
         }
 
     }
 
     public void goToInteraction(View view) {
-        Intent intent1 = new Intent(PhotoActivity.this, ServerInteraction.class);
-        startActivity(intent1);
+        connectToServer();
     }
 
 
@@ -119,9 +128,9 @@ public class PhotoActivity extends Activity {
 
         @Override
         public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-            Camera.Parameters parameters = mCamera.getParameters();
+            final Camera.Parameters parameters = mCamera.getParameters();
 
-            Display display = ((WindowManager)getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
+            Display display = ((WindowManager) getSystemService(WINDOW_SERVICE)).getDefaultDisplay();
 
 
             switch (display.getRotation()) {
@@ -150,39 +159,22 @@ public class PhotoActivity extends Activity {
             //setRotateOrientation();
 
             mCall = new Camera.PictureCallback() {
+                @RequiresApi(api = Build.VERSION_CODES.O)
                 @Override
                 public void onPictureTaken(byte[] data, Camera camera) {
-                  /*  Uri uriTarget = getContentResolver().insert//(Media.EXTERNAL_CONTENT_URI, image);
-                            (MediaStore.Images.Media.EXTERNAL_CONTENT_URI, new ContentValues());
 
-                    OutputStream imageFileOS;
-                    try {
-                        imageFileOS = getContentResolver().openOutputStream(uriTarget);
-                        imageFileOS.write(data);
-                        imageFileOS.flush();
-                        imageFileOS.close();
-
-                        Toast.makeText(MainActivity.this,
-                                "Image saved: " + uriTarget.toString(), Toast.LENGTH_LONG).show();
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }*/
-                    //mCamera.startPreview();
-                    Bitmap bmp;
-
-                   /* bmp = BitmapFactory.decodeByteArray(data, 0, data.length);
-                    iv_image.setImageBitmap(bmp);*/
                     int angleToRotate = getRoatationAngle(PhotoActivity.this, Camera.CameraInfo.CAMERA_FACING_FRONT);
                     // Solve image inverting problem
                     angleToRotate = angleToRotate + 180;
+
                     Bitmap orignalImage = BitmapFactory.decodeByteArray(data, 0, data.length);
                     Bitmap bitmapImage = rotate(orignalImage, angleToRotate);
-                    String path = Environment.getExternalStorageDirectory().toString();
+                    String path = getExternalFilesDir(null).getPath();
                     OutputStream fOut = null;
+                    photoString = encodeImageToString(data);
+                    Log.d("PhotoTag",photoString);
                     Integer counter = 0;
-                    File file = new File(path, "FitnessGirl"+counter+".jpg"); // the File to save , append increasing numeric counter to prevent files from getting overwritten.
+                    File file = new File(path, "FitnessGirl" + counter + ".jpg"); // the File to save , append increasing numeric counter to prevent files from getting overwritten.
                     try {
                         fOut = new FileOutputStream(file);
                     } catch (FileNotFoundException e) {
@@ -200,10 +192,9 @@ public class PhotoActivity extends Activity {
                     // do not forget to close the stream
 
 
-
                 }
 
-                public  Bitmap rotate(Bitmap bitmap, int degree) {
+                public Bitmap rotate(Bitmap bitmap, int degree) {
                     int w = bitmap.getWidth();
                     int h = bitmap.getHeight();
 
@@ -212,9 +203,24 @@ public class PhotoActivity extends Activity {
 
                     return Bitmap.createBitmap(bitmap, 0, 0, w, h, mtx, true);
                 }
+
             };
 
+            mCamera.takePicture(null, null, mCall);
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            //intent.putExtra("photoArray", bytePhoto);j
 
+
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.O)
+        public String  encodeImageToString(byte[] photoBytesArray ){
+            String encodeString = getEncoder().encodeToString(photoBytesArray);
+            return encodeString;
         }
 
         int getFrontCameraId() {
@@ -248,6 +254,7 @@ public class PhotoActivity extends Activity {
 
         @Override
         public void surfaceDestroyed(SurfaceHolder holder) {
+
             mCamera.stopPreview();
             mCamera.release();
             mCamera = null;
@@ -255,5 +262,32 @@ public class PhotoActivity extends Activity {
 
 
     }
+    public void connectToServer(){
+        String postUrl = "http://" + "10.0.2.2" + ":" + "1000" + "/";
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("message",photoString);
+        HttpUtility.newRequest(postUrl,HttpUtility.METHOD_POST,params, new HttpUtility.Callback() {
+            @Override
+            public void OnSuccess(String response) {
+                // on success
+                goToEyes(response);
+                Log.d("ServerOnSuccess", response);
+            }
+            @Override
+            public void OnError(int status_code, String message) {
+                // on error
+                Log.d("ServerOnSuccess",status_code+" message="+message);
+
+            }
+        });
+    }
+
+
+    public void goToEyes(String angle) {
+        Intent intent = new Intent(this, EyesActivity.class);
+        intent.putExtra("angle", angle);
+        startActivity(intent);
+    }
+
 
 }

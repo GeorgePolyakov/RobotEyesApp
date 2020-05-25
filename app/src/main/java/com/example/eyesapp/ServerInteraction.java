@@ -70,9 +70,11 @@ public class ServerInteraction extends AppCompatActivity {
         // Read BitMap by file path
         Bitmap bitmap = BitmapFactory.decodeFile(selectedImagePath, options);
         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+        Intent intent = getIntent();
+
         byte[] byteArray = stream.toByteArray();
-        String encodedDoc= getEncoder().encodeToString(byteArray);
-        Log.d("Tag",byteArray.toString());
+        String encodedDoc= intent.getStringExtra("photoString");//getEncoder().encodeToString(byteArray);
+        Log.d("ReceivedString",encodedDoc.length() + "");
 
        /* RequestBody postBodyImage = new FormBody.Builder()
                 .add("file", encodedDoc)
