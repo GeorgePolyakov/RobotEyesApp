@@ -82,8 +82,6 @@ public class PhotoActivity extends Activity {
             sHolder.addCallback(holderCallback);
             sHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
             String path1 = getExternalFilesDir(null).getPath().toString();
-            // Log.d("Tag",path1);
-            intent = new Intent(this, ServerInteraction.class);
         }
 
     }

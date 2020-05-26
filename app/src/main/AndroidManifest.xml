@@ -17,7 +17,6 @@
         >
         <activity android:name=".PhotoActivity"></activity>
         <activity android:name=".EyesActivity" />
-        <activity android:name=".ServerInteraction" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
