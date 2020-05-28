@@ -25,17 +25,33 @@ import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+
 import androidx.annotation.RequiresApi;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Timer;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
 import static java.util.Base64.getEncoder;
@@ -87,7 +103,7 @@ public class PhotoActivity extends Activity {
     }
 
     public void goToInteraction(View view) {
-        connectToServer();
+        connectServer();
     }
 
 
@@ -169,7 +185,12 @@ public class PhotoActivity extends Activity {
                     Bitmap bitmapImage = rotate(orignalImage, angleToRotate);
                     String path = getExternalFilesDir(null).getPath();
                     OutputStream fOut = null;
-                    photoString = encodeImageToString(data);
+                    bytePhoto = data;
+                    try {
+                        photoString = encodeImageToString(data);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                     Log.d("PhotoTag",photoString);
                     Integer counter = 0;
                     File file = new File(path, "FitnessGirl" + counter + ".jpg"); // the File to save , append increasing numeric counter to prevent files from getting overwritten.
@@ -187,7 +208,7 @@ public class PhotoActivity extends Activity {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    // do not forget to close the stream
+
 
 
                 }
@@ -210,15 +231,17 @@ public class PhotoActivity extends Activity {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            //intent.putExtra("photoArray", bytePhoto);j
-
-
+            //intent.putExtra("photoArray", bytePhoto);
         }
 
+
         @RequiresApi(api = Build.VERSION_CODES.O)
-        public String  encodeImageToString(byte[] photoBytesArray ){
-            String encodeString = getEncoder().encodeToString(photoBytesArray);
-            return encodeString;
+        public String  encodeImageToString(byte[] photoBytesArray ) throws JSONException {
+            String encodeString =  Base64.getEncoder().encodeToString(photoBytesArray);
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("keyPhotoString",encodeString);
+           // String encodeString = getEncoder().encodeToString(photoBytesArray);
+            return  jsonObject.toString();
         }
 
         int getFrontCameraId() {
@@ -258,8 +281,33 @@ public class PhotoActivity extends Activity {
             mCamera = null;
         }
 
+    }
+    void connectServer(){
+
+        String postUrl = "http://" + "10.0.2.2" + ":" + "1000" + "/";
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("message",photoString);
+
+        // static class "HttpUtility" with static method "newRequest(url,method,callback)"
+        HttpUtility.newRequest(postUrl,HttpUtility.METHOD_POST,params, new HttpUtility.Callback() {
+            @Override
+            public void OnSuccess(String response) {
+                // on success
+                Log.d("ServerOnSuccess", response);
+            }
+            @Override
+            public void OnError(int status_code, String message) {
+                // on error
+                Log.d("ServerOnSuccess",status_code+" message="+message);
+
+            }
+        });
+
+
 
     }
+
+    /*
     public void connectToServer(){
         String postUrl = "http://" + "10.0.2.2" + ":" + "1000" + "/";
         HashMap<String, String> params = new HashMap<String, String>();
@@ -287,5 +335,5 @@ public class PhotoActivity extends Activity {
         startActivity(intent);
     }
 
-
+*/
 }
