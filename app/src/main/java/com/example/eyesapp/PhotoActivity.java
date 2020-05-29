@@ -34,11 +34,14 @@ import androidx.annotation.RequiresApi;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
@@ -65,8 +68,8 @@ public class PhotoActivity extends Activity {
     private HolderCallback holderCallback;
     Camera.PictureCallback mCall;
     Intent intent;
-    String photoString="";
-    byte [] bytePhoto;
+    String photoString = "";
+    byte[] bytePhoto;
 
     private int findFrontFacingCameraID() {
         int cameraId = -1;
@@ -102,7 +105,7 @@ public class PhotoActivity extends Activity {
 
     }
 
-    public void goToInteraction(View view) {
+    public void goToInteraction(View view) throws InterruptedException {
         connectServer();
     }
 
@@ -191,7 +194,7 @@ public class PhotoActivity extends Activity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    Log.d("PhotoTag",photoString);
+                    Log.v("PhotoTag", photoString);
                     Integer counter = 0;
                     File file = new File(path, "FitnessGirl" + counter + ".jpg"); // the File to save , append increasing numeric counter to prevent files from getting overwritten.
                     try {
@@ -202,13 +205,14 @@ public class PhotoActivity extends Activity {
 
                     // Bitmap pictureBitmap = getImageBitmap(myurl); // obtaining the Bitmap
                     bitmapImage.compress(Bitmap.CompressFormat.JPEG, 85, fOut); // saving the Bitmap to a file compressed as a JPEG with 85% compression rate
+
+
                     try {
                         fOut.flush();
                         fOut.close();// Not really required
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-
 
 
                 }
@@ -234,15 +238,6 @@ public class PhotoActivity extends Activity {
             //intent.putExtra("photoArray", bytePhoto);
         }
 
-
-        @RequiresApi(api = Build.VERSION_CODES.O)
-        public String  encodeImageToString(byte[] photoBytesArray ) throws JSONException {
-            String encodeString =  Base64.getEncoder().encodeToString(photoBytesArray);
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("keyPhotoString",encodeString);
-           // String encodeString = getEncoder().encodeToString(photoBytesArray);
-            return  jsonObject.toString();
-        }
 
         int getFrontCameraId() {
             Camera.CameraInfo ci = new Camera.CameraInfo();
@@ -282,29 +277,114 @@ public class PhotoActivity extends Activity {
         }
 
     }
-    void connectServer(){
+
+    void connectServer() {
 
         String postUrl = "http://" + "10.0.2.2" + ":" + "1000" + "/";
         HashMap<String, String> params = new HashMap<String, String>();
-        params.put("message",photoString);
+        params.put("message", photoString);
+       /* if (photoString.length() > 4000) {
+            Log.v("TAG", "sb.length = " + photoString.length());
+            int chunkCount = photoString.length() / 4000;     // integer division
+            for (int i = 0; i <= chunkCount; i++) {
+                int max = 4000 * (i + 1);
+                if (max >= photoString.length()) {
+                    Log.v("TAG", "chunk " + i + " of " + chunkCount + ":" + photoString.substring(4000 * i));
+                } else {
+                    Log.v("TAG", "chunk " + i + " of " + chunkCount + ":" + photoString.substring(4000 * i, max));
+                }
+            }
+        }
+        Log.v("zxc", photoString);
+        Log.v("asd", photoString.length() + "");*/
+
 
         // static class "HttpUtility" with static method "newRequest(url,method,callback)"
-        HttpUtility.newRequest(postUrl,HttpUtility.METHOD_POST,params, new HttpUtility.Callback() {
+        HttpUtility.newRequest(postUrl, HttpUtility.METHOD_POST, params, new HttpUtility.Callback() {
             @Override
             public void OnSuccess(String response) {
                 // on success
                 Log.d("ServerOnSuccess", response);
+                Intent intent = new Intent(PhotoActivity.this, EyesActivity.class);
+                intent.putExtra("angle", response);
+                startActivity(intent);
             }
+
             @Override
             public void OnError(int status_code, String message) {
                 // on error
-                Log.d("ServerOnSuccess",status_code+" message="+message);
+                Log.d("ServerOnSuccess", status_code + " message=" + message);
 
             }
         });
 
+    }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public String encodeImageToString(byte[] photoBytesArray) throws JSONException {
+        String encodeString = Base64.getEncoder().encodeToString(photoBytesArray);
+        Log.d("qwe", encodeString.length() + "");
+        Log.v("qwe", encodeString + "");
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("keyPhotoString", encodeString);
+        return jsonObject.toString();
+    }
 
+    public void sendPost() throws InterruptedException {
+        Thread thread = new Thread(new Runnable() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void run() {
+                try {
+
+                    String postUrl = "http://" + "10.0.2.2" + ":" + "1000" + "/";
+                    URL url = new URL(postUrl);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("POST");
+                    conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+                    conn.setRequestProperty("Accept", "application/json");
+                    conn.setDoOutput(true);
+                    conn.setDoInput(true);
+
+                    JSONObject jsonParam = new JSONObject();
+                    jsonParam.put("timestamp", encodeImageToString(bytePhoto));
+                    jsonParam.put("uname", "Egor");
+                    jsonParam.put("message", "MyMessgae");
+                    jsonParam.put("latitude", 0D);
+                    jsonParam.put("longitude", 0D);
+                    String str = encodeImageToString(bytePhoto) ;
+                    Log.i("JSON", jsonParam.toString());
+                    if (encodeImageToString(bytePhoto).length() > 4000) {
+                        Log.v("TAG", "sb.length = " + str.length());
+                        int chunkCount = str.length() / 4000;     // integer division
+                        for (int i = 0; i <= chunkCount; i++) {
+                            int max = 4000 * (i + 1);
+                            if (max >= str.length()) {
+                                Log.v("TAG", "chunk " + i + " of " + chunkCount + ":" + str.substring(4000 * i));
+                            } else {
+                                Log.v("TAG", "chunk " + i + " of " + chunkCount + ":" + str.substring(4000 * i, max));
+                            }
+                        }
+                    }
+                    DataOutputStream os = new DataOutputStream(conn.getOutputStream());
+                    //os.writeBytes(URLEncoder.encode(jsonParam.toString(), "UTF-8"));
+                    os.writeBytes(jsonParam.toString());
+
+                    os.flush();
+                    os.close();
+
+                    Log.i("STATUS", String.valueOf(conn.getResponseCode()));
+                    Log.i("MSG", conn.getResponseMessage());
+
+                    conn.disconnect();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        thread.start();
+        thread.join();
     }
 
     /*
@@ -326,14 +406,14 @@ public class PhotoActivity extends Activity {
 
             }
         });
-    }
+    }*/
 
 
-    public void goToEyes(String angle) {
+ /*   public void goToEyes(String angle) {
         Intent intent = new Intent(this, EyesActivity.class);
         intent.putExtra("angle", angle);
         startActivity(intent);
-    }
+    }*/
 
-*/
+
 }
