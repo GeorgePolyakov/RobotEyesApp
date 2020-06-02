@@ -24,6 +24,7 @@ public class EyesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_eyes);
 
+
         Bundle arguments = getIntent().getExtras();
         angle = Float.parseFloat(arguments.get("angle").toString());
         Log.d("xyi",angle + "aaaaaaaaaaaaaaaaa");

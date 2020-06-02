@@ -70,6 +70,7 @@ public class PhotoActivity extends Activity {
     Intent intent;
     String photoString = "";
     byte[] bytePhoto;
+    int indexSearch;
 
     private int findFrontFacingCameraID() {
         int cameraId = -1;
@@ -280,34 +281,26 @@ public class PhotoActivity extends Activity {
 
     void connectServer() {
 
-        String postUrl = "http://" + "10.0.2.2" + ":" + "1000" + "/";
+        String postUrl = "http://" + "192.168.43.244" + ":" + "1000" + "/";
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("message", photoString);
-       /* if (photoString.length() > 4000) {
-            Log.v("TAG", "sb.length = " + photoString.length());
-            int chunkCount = photoString.length() / 4000;     // integer division
-            for (int i = 0; i <= chunkCount; i++) {
-                int max = 4000 * (i + 1);
-                if (max >= photoString.length()) {
-                    Log.v("TAG", "chunk " + i + " of " + chunkCount + ":" + photoString.substring(4000 * i));
-                } else {
-                    Log.v("TAG", "chunk " + i + " of " + chunkCount + ":" + photoString.substring(4000 * i, max));
-                }
-            }
-        }
-        Log.v("zxc", photoString);
-        Log.v("asd", photoString.length() + "");*/
 
-
-        // static class "HttpUtility" with static method "newRequest(url,method,callback)"
         HttpUtility.newRequest(postUrl, HttpUtility.METHOD_POST, params, new HttpUtility.Callback() {
             @Override
             public void OnSuccess(String response) {
-                // on success
                 Log.d("ServerOnSuccess", response);
-                Intent intent = new Intent(PhotoActivity.this, EyesActivity.class);
-                intent.putExtra("angle", response);
-                startActivity(intent);
+                indexSearch = response.indexOf("-1");
+                if(indexSearch==-1)
+                {
+                    Intent intent = new Intent(PhotoActivity.this, EyesActivity.class);
+                    intent.putExtra("angle", "45");
+                    startActivity(intent);
+                }
+                else {
+                    Intent intent = new Intent(PhotoActivity.this, EyesActivity.class);
+                    intent.putExtra("angle", "90");
+                    startActivity(intent);
+                }
             }
 
             @Override
@@ -323,8 +316,6 @@ public class PhotoActivity extends Activity {
     @RequiresApi(api = Build.VERSION_CODES.O)
     public String encodeImageToString(byte[] photoBytesArray) throws JSONException {
         String encodeString = Base64.getEncoder().encodeToString(photoBytesArray);
-        Log.d("qwe", encodeString.length() + "");
-        Log.v("qwe", encodeString + "");
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("keyPhotoString", encodeString);
         return jsonObject.toString();
@@ -337,7 +328,7 @@ public class PhotoActivity extends Activity {
             public void run() {
                 try {
 
-                    String postUrl = "http://" + "10.0.2.2" + ":" + "1000" + "/";
+                    String postUrl = "http://" + "192.168.43.244" + ":" + "1000" + "/";
                     URL url = new URL(postUrl);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setRequestMethod("POST");
@@ -367,7 +358,6 @@ public class PhotoActivity extends Activity {
                         }
                     }
                     DataOutputStream os = new DataOutputStream(conn.getOutputStream());
-                    //os.writeBytes(URLEncoder.encode(jsonParam.toString(), "UTF-8"));
                     os.writeBytes(jsonParam.toString());
 
                     os.flush();
@@ -386,34 +376,4 @@ public class PhotoActivity extends Activity {
         thread.start();
         thread.join();
     }
-
-    /*
-    public void connectToServer(){
-        String postUrl = "http://" + "10.0.2.2" + ":" + "1000" + "/";
-        HashMap<String, String> params = new HashMap<String, String>();
-        params.put("message",photoString);
-        HttpUtility.newRequest(postUrl,HttpUtility.METHOD_POST,params, new HttpUtility.Callback() {
-            @Override
-            public void OnSuccess(String response) {
-                // on success
-                goToEyes(response);
-                Log.d("ServerOnSuccess", response);
-            }
-            @Override
-            public void OnError(int status_code, String message) {
-                // on error
-                Log.d("ServerOnSuccess",status_code+" message="+message);
-
-            }
-        });
-    }*/
-
-
- /*   public void goToEyes(String angle) {
-        Intent intent = new Intent(this, EyesActivity.class);
-        intent.putExtra("angle", angle);
-        startActivity(intent);
-    }*/
-
-
 }

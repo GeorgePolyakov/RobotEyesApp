@@ -3,6 +3,7 @@ package com.example.eyesapp;
 import android.content.Intent;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -90,10 +91,11 @@ public class SignalReceiver extends AppCompatActivity {
         return ip;
     }
 
-    public void gotoNextActivity(){
+    public void gotoNextActivity() {
         Intent intent = new Intent(SignalReceiver.this, PhotoActivity.class);
         startActivity(intent);
     }
+
     private class HttpServerThread extends Thread {
 
         static final int HttpServerPORT = 8888;
@@ -105,7 +107,7 @@ public class SignalReceiver extends AppCompatActivity {
             try {
                 httpServerSocket = new ServerSocket(HttpServerPORT);
 
-                while(true){
+                while (!HttpServerThread.interrupted()) {
                     socket = httpServerSocket.accept();
 
                     HttpResponseThread httpResponseThread =
@@ -129,7 +131,7 @@ public class SignalReceiver extends AppCompatActivity {
         Socket socket;
         String h1;
 
-        HttpResponseThread(Socket socket, String msg){
+        HttpResponseThread(Socket socket, String msg) {
             this.socket = socket;
             h1 = msg;
         }
@@ -139,8 +141,6 @@ public class SignalReceiver extends AppCompatActivity {
             BufferedReader is;
             PrintWriter os;
             String request;
-
-
             try {
                 is = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 request = is.readLine();
@@ -165,22 +165,25 @@ public class SignalReceiver extends AppCompatActivity {
 
                 msgLog += "Request of " + request
                         + " from " + socket.getInetAddress().toString() + "\n";
-                msgLog = msgLog.substring(msgLog.indexOf('=') + 1, msgLog.indexOf('H'));
-                if(msgLog.trim().equals("true")){
-                   gotoNextActivity();
+                int signalFlag = msgLog.indexOf("true");
+                Log.d("SingleTag",signalFlag+"");
+                Log.d("SingleTag",msgLog);
+                if (signalFlag!=-1) {
+                    throw new InterruptedException();
                 }
 
-                SignalReceiver.this.runOnUiThread(new Runnable() {
+             /*   SignalReceiver.this.runOnUiThread(new Runnable() {
 
                     @Override
                     public void run() {
 
                         infoMsg.setText(msgLog);
                     }
-                });
+                });*/
 
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 // TODO Auto-generated catch block
+                gotoNextActivity();
                 e.printStackTrace();
             }
 
