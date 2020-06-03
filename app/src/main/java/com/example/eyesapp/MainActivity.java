@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void goToPhoto(View v) {
-        Intent intent = new Intent(MainActivity.this, SignalReceiver.class);
+        Intent intent = new Intent(MainActivity.this, SignalActivity.class);
         startActivity(intent);
     }
 

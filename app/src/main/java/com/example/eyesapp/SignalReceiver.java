@@ -172,15 +172,6 @@ public class SignalReceiver extends AppCompatActivity {
                     throw new InterruptedException();
                 }
 
-             /*   SignalReceiver.this.runOnUiThread(new Runnable() {
-
-                    @Override
-                    public void run() {
-
-                        infoMsg.setText(msgLog);
-                    }
-                });*/
-
             } catch (IOException | InterruptedException e) {
                 // TODO Auto-generated catch block
                 gotoNextActivity();
