@@ -7,7 +7,6 @@
     android:id="@+id/mainlayout"
     tools:context=".MainActivity">
 
-
     <ImageButton
         android:id="@+id/imageButtonRun"
         android:layout_width="291dp"
@@ -20,24 +19,23 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.366" />
+        app:layout_constraintVertical_bias="0.333" />
 
     <EditText
         android:id="@+id/ipText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:gravity="center"
         android:inputType="textPersonName"
         android:text="Enter Ip Adress"
         android:textColor="@color/white_color"
         android:backgroundTint="@color/white_color"
         android:textCursorDrawable="@null"
+        android:gravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageButtonRun"
-        app:layout_constraintVertical_bias="0.883" />
+        app:layout_constraintTop_toBottomOf="@+id/imageButtonRun" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

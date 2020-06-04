@@ -16,7 +16,6 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
         <activity android:name=".SignalActivity"></activity>
-        <activity android:name=".SignalReceiver" />
         <activity android:name=".PhotoActivity" />
         <activity android:name=".EyesActivity" />
         <activity android:name=".MainActivity">

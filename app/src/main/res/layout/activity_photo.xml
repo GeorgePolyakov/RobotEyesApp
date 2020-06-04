@@ -6,18 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".PhotoActivity">
 
-    <Button
-        android:id="@+id/serverInteraction"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Send Photo"
-        android:onClick="goToInteraction"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintVertical_bias="0.293" />
-
     <SurfaceView
         android:id="@+id/surfaceView"
         android:layout_width="match_parent"

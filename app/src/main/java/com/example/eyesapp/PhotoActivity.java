@@ -34,30 +34,15 @@ import androidx.annotation.RequiresApi;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.DataOutputStream;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.HashMap;
-import java.util.Timer;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-
-import static android.provider.MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE;
-import static java.util.Base64.getEncoder;
 
 public class PhotoActivity extends Activity {
 
@@ -215,6 +200,12 @@ public class PhotoActivity extends Activity {
                         e.printStackTrace();
                     }
 
+                    try {
+                        Thread.currentThread().join(2000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    connectServer();
 
                 }
 
@@ -293,7 +284,7 @@ public class PhotoActivity extends Activity {
                 if(indexSearch==-1)
                 {
                     Intent intent = new Intent(PhotoActivity.this, EyesActivity.class);
-                    intent.putExtra("angle", "45");
+                    intent.putExtra("angle", "270");
                     startActivity(intent);
                 }
                 else {
@@ -321,59 +312,5 @@ public class PhotoActivity extends Activity {
         return jsonObject.toString();
     }
 
-    public void sendPost() throws InterruptedException {
-        Thread thread = new Thread(new Runnable() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void run() {
-                try {
 
-                    String postUrl = "http://" + "192.168.43.244" + ":" + "1000" + "/";
-                    URL url = new URL(postUrl);
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                    conn.setRequestMethod("POST");
-                    conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
-                    conn.setRequestProperty("Accept", "application/json");
-                    conn.setDoOutput(true);
-                    conn.setDoInput(true);
-
-                    JSONObject jsonParam = new JSONObject();
-                    jsonParam.put("timestamp", encodeImageToString(bytePhoto));
-                    jsonParam.put("uname", "Egor");
-                    jsonParam.put("message", "MyMessgae");
-                    jsonParam.put("latitude", 0D);
-                    jsonParam.put("longitude", 0D);
-                    String str = encodeImageToString(bytePhoto) ;
-                    Log.i("JSON", jsonParam.toString());
-                    if (encodeImageToString(bytePhoto).length() > 4000) {
-                        Log.v("TAG", "sb.length = " + str.length());
-                        int chunkCount = str.length() / 4000;     // integer division
-                        for (int i = 0; i <= chunkCount; i++) {
-                            int max = 4000 * (i + 1);
-                            if (max >= str.length()) {
-                                Log.v("TAG", "chunk " + i + " of " + chunkCount + ":" + str.substring(4000 * i));
-                            } else {
-                                Log.v("TAG", "chunk " + i + " of " + chunkCount + ":" + str.substring(4000 * i, max));
-                            }
-                        }
-                    }
-                    DataOutputStream os = new DataOutputStream(conn.getOutputStream());
-                    os.writeBytes(jsonParam.toString());
-
-                    os.flush();
-                    os.close();
-
-                    Log.i("STATUS", String.valueOf(conn.getResponseCode()));
-                    Log.i("MSG", conn.getResponseMessage());
-
-                    conn.disconnect();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        thread.start();
-        thread.join();
-    }
 }

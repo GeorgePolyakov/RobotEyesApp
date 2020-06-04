@@ -12,12 +12,16 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 public class SignalActivity extends AppCompatActivity {
+    String ip = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signal);
         startSignal();
+        Intent intent = getIntent();
+        ip = intent.getStringExtra("ipKey");
+        Log.d("ipTag",ip + "AAAAAAAAAAAAAAAAAAAAaaa");
 
     }
 
@@ -29,7 +33,7 @@ public class SignalActivity extends AppCompatActivity {
             @Override
             public void run() {
 
-                String postUrl = "http://" + "192.168.43.244" + ":" + "1000" + "/";
+                String postUrl = "http://" + ip + ":" + "1000" + "/";
                 HashMap<String, String> params = new HashMap<String, String>();
                 params.put("message", "d");
 
