@@ -284,12 +284,12 @@ public class PhotoActivity extends Activity {
                 if(indexSearch==-1)
                 {
                     Intent intent = new Intent(PhotoActivity.this, EyesActivity.class);
-                    intent.putExtra("angle", "270");
+                    intent.putExtra("angle", "false");
                     startActivity(intent);
                 }
                 else {
                     Intent intent = new Intent(PhotoActivity.this, EyesActivity.class);
-                    intent.putExtra("angle", "90");
+                    intent.putExtra("angle", "true");
                     startActivity(intent);
                 }
             }

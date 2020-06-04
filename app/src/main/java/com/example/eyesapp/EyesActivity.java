@@ -5,29 +5,52 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 public class EyesActivity extends AppCompatActivity {
 
     private ImageView eyes1, eyes2;
     private ImageView eyes;
-    float angle = 0f;
+    //float angle = 0f;
+    String angle="";
     float x1, y1, x2, y2;
     AnimatorSet animatorSet;
+    TextView warningText;
 
+    @SuppressLint("ResourceAsColor")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_eyes);
+        warningText = findViewById(R.id.eyesView);
+        eyes1 = findViewById(R.id.eyes1);
+        eyes2 = findViewById(R.id.eyes2);
 
 
         Bundle arguments = getIntent().getExtras();
-        angle = Float.parseFloat(arguments.get("angle").toString());
-        eyes1 = findViewById(R.id.eyes1);
+       // angle = arguments.get("angle").toString();
+        angle = "false";
+
+        if(angle.equals("true")){
+            warningText.setTextColor(getResources().getColor(R.color.green_color));
+            warningText.setText("Доступ разрешен!!!");
+            eyes1.setImageDrawable(getResources().getDrawable(R.drawable.ic_1));
+            eyes1.setImageDrawable(getResources().getDrawable(R.drawable.ic_1));
+        } else{
+            warningText.setTextColor(getResources().getColor(R.color.red_color));
+            warningText.setText("Доступ запрещен!!!");
+            eyes1.setImageDrawable(getResources().getDrawable(R.drawable.i2));
+            eyes2.setImageDrawable(getResources().getDrawable(R.drawable.i2));
+        }
+
+       // angle = Float.parseFloat(arguments.get("angle").toString());
+       /* eyes1 = findViewById(R.id.eyes1);
         eyes2 = findViewById(R.id.eyes2);
         x1 = eyes1.getTranslationX();
         y1 = eyes1.getTranslationY();
@@ -50,7 +73,7 @@ public class EyesActivity extends AppCompatActivity {
         animatorSet.setDuration(1500);
         animatorSet.start();
         eyes1.setImageDrawable(getResources().getDrawable(R.drawable.i2));
-        eyes2.setImageDrawable(getResources().getDrawable(R.drawable.i2));
+        eyes2.setImageDrawable(getResources().getDrawable(R.drawable.i2));*/
 
 
     }

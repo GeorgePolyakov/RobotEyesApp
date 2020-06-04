@@ -48,5 +48,14 @@
         android:contentDescription="TODO"
         android:layout_marginTop="-80dp"
         />
+    <TextView
+        android:id="@+id/eyesView"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:gravity="center"
+        android:text=""
+        android:textColor="#FF0000"
+        android:textSize="25dp" />
 
 </FrameLayout>
